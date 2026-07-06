@@ -34,22 +34,22 @@
 	  </MenuItem>
     
     <MenuItem Header="_About">
-      <MenuItem Header="{Binding ProgramVersion, StringFormat=BeatmapExporter version: {0}}"
+      <MenuItem Header="{Binding ProgramVersion, StringFormat=BeatmapCleaner version: {0}}"
                 IsEnabled="False" />
       <MenuItem Header="{Binding LazerVersion, StringFormat=Built for osu!lazer release: {0}}"
                 IsEnabled="False" />
       <MenuItem Header="{Binding DatabaseVersion, StringFormat=osu!lazer database version: {0}}"
                 IsEnabled="False" />
-      <MenuItem Header="BeatmapExporter _GitHub Project"
+      <MenuItem Header="BeatmapCleaner _GitHub Project"
                 Command="{Binding GitHub}" />
-      <MenuItem Header="BeatmapExporter Releases"
+      <MenuItem Header="BeatmapCleaner Releases"
                 Command="{Binding Releases}" />
       <MenuItem Header="osu! GitHub Releases"
                 Command="{Binding Osu}" />
       <Separator />
-      <MenuItem Header="_View BeatmapExporter AppData"
+      <MenuItem Header="_View BeatmapCleaner AppData"
                 Command="{Binding ApplicationData}" />
-      <MenuItem Header="_Reset BeatmapExporter Settings"
+      <MenuItem Header="_Reset BeatmapCleaner Settings"
                 Command="{Binding ResetCommand}" />
     </MenuItem>
   </Menu>
