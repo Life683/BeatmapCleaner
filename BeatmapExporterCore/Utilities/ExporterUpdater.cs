@@ -2,13 +2,13 @@
 {
     public static class ExporterUpdater
     {
-        public const string Version = "2.6.1"; // raw version, user is notified if their version is different than the online latest
-        public const string FeatureVersion = "2.7.1-mp3export"; // version with prerelease flag etc.
+        public const string Version = "1.0.0"; // raw version, user is notified if their version is different than the online latest
+        public const string FeatureVersion = "1.0.0"; // version with prerelease flag etc.
 
-        public const string Project = "https://github.com/kabiiQ/BeatmapExporter";
+        public const string Project = "https://github.com/Life683/BeatmapCleaner";
         public const string Releases = $"{Project}/releases";
         public const string Latest = $"{Releases}/latest";
-        public const string VersionDoc = "https://raw.githubusercontent.com/kabiiQ/BeatmapExporter/main/VERSION";
+        public const string VersionDoc = "https://raw.githubusercontent.com/Life683/BeatmapCleaner/refs/heads/main/VERSION";
 
         public record struct Update(string Current, string New);
 
