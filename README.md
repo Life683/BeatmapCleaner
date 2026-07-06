@@ -12,7 +12,7 @@ For issues or if an update is required, you can create an issue or discussion on
 
 # Purpose/Functionality
 
-BeatmapCleaner is a program/tool that can remove unneeded files in beatmaps. This included, hitsounds, skins, and backgrounds.
+BeatmapCleaner is a program/tool that can remove unneeded files in beatmaps. This includes, hitsounds, skins, and backgrounds.
 
 osu! Lazer does not have a "Songs/" folder as "stable" osu! does. Lazer's files are stored under hashed filenames and other information about the beatmap is contained in a local "Realm" database on your PC.
 
