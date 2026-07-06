@@ -15,12 +15,12 @@
       <MenuItem Header="_Close Database"
                 Command="{Binding CloseCommand}" />
       <Separator />
-      <MenuItem Header="_Exit BeatmapExporter"
+      <MenuItem Header="_Exit BeatmapCleaner"
                 Command="{Binding ExitCommand}"/>
     </MenuItem>
 
-	  <MenuItem Header="_Export">
-		  <MenuItem Header="Search _Beatmaps"
+	  <MenuItem Header="_Clean">
+		  <MenuItem Header="View _Beatmaps"
 					Command="{Binding BeatmapsCommand}" />
 		  <MenuItem Header="View _Collections"
 					Command="{Binding CollectionsCommand}" />
