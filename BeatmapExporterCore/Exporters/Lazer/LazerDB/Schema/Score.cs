@@ -21,7 +21,6 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema
         public string Statistics { get; set; } = string.Empty;
         public IList<int> Pauses { get; } = null!;
         public int Rank { get; set; }
-        // Remove the [Ignored] attributes and use these types:
         public string ClientVersion { get; set; } = string.Empty;
         public Ruleset Ruleset { get; set; } = null!;
         public string Hash { get; set; } = string.Empty;
