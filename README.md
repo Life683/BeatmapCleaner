@@ -20,7 +20,7 @@ osu! Lazer does not have a "Songs/" folder as "stable" osu! does. Lazer's files 
 
 Cleaning beatmaps is done through the clean media files button. You can filter which ones will be cleaned.
 
-<img width="1423" height="699" alt="image" src="https://github.com/user-attachments/assets/1f1eee28-ef8c-4bc7-b3cd-8d5420923ef4" />
+<img width="1413" height="697" alt="image" src="https://github.com/user-attachments/assets/ff7ff9e7-565c-47df-b330-d4a40e41e6db" />
 
 # Download/Usage
 
