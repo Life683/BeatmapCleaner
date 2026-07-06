@@ -1,42 +1,47 @@
-# BeatmapExporter (for osu! Lazer)
+# BeatmapCleaner (for osu! Lazer)
 
-### Support the Developer
+### Support the original developer of BeatmapExport
+
+Without them, this repository wouldn't exist!
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E5AF13X)
 
-For issues or if an update is required, you can create an issue or discussion on GitHub. Alternatively, I can be found through Discord via by [my bot's support server](https://discord.com/invite/ucVhtnh). Though it is not for BeatmapExporter specifically, I do not mind it being used for my other utilities such as this one.
+For issues or if an update is required, you can create an issue or discussion on GitHub.
 
 <hr />
 
 # Purpose/Functionality
 
-BeatmapExporter is a program/tool that can mass-export your osu! beatmap library from the modern osu! Lazer storage format.
+BeatmapCleaner is a program/tool that can remove unneeded files in beatmaps. This included, hitsounds, skins, and backgrounds.
 
 osu! Lazer does not have a "Songs/" folder as "stable" osu! does. Lazer's files are stored under hashed filenames and other information about the beatmap is contained in a local "Realm" database on your PC.
 
-# Basic Export Task Screenshot
+# Basic Clean Task Screenshot
 
-Exporting beatmaps with a tag in the GUI:
+Cleaning beatmaps is done through the clean media files button. You can filter which ones will be cleaned.
 
-![](https://i.imgur.com/A6SFsR6.png)
+<img width="1423" height="699" alt="image" src="https://github.com/user-attachments/assets/1f1eee28-ef8c-4bc7-b3cd-8d5420923ef4" />
 
 # Download/Usage
 
-Executables are available from the [Releases section here on GitHub](https://github.com/kabiiQ/BeatmapExporter/releases), also found on the right of the main page (below About). 
+Executables are available from the [Releases section here on GitHub](https://github.com/Life683/BeatmapCleaner/releases), also found on the right of the main page (below About). 
 
 If your Lazer database is in the default location (%appdata%\osu), you should be able to simply run the application. If you changed the database location when installing osu! (Lazer), the program will allow you to locate your database.
 
 The directory needed in the Lazer storage contains another directory named "files". This folder can also be opened from in-game if you moved it and are unsure where it is located. 
 
-## Beatmap Export
+## Beatmap Clean
 
-This new storage format which osu! uses results in a better experience while playing the game. However, a result of this system is that you can not easily export all or part of your songs library for sharing or moving back to osu! stable. 
+This new storage format which osu! uses results in a better experience while playing the game. However, a result of this system is that you can not easily remove unneeded files from beatmaps.
 
-This utility allows you to export beatmaps back into `.osz` files. There are additional export modes (`.mp3` files, background images, score replays, collections, skins), which can also be seen at the bottom of this README.
+This utility allows you to remove unneeded beatmaps files, such as backgrounds.
 
-BeatmapExporter includes a beatmap filter system allowing you to select a portion of your library to only export certain maps (for example, above a certain star rating, specific artists/mappers, specific gamemodes, specific collections, etc). You can also simply export your entire library at once. The alternative export modes also follow this filter system.
+BeatmapCleaner includes a beatmap filter system allowing you to select a portion of your library to only clean certain maps (for example, above a certain star rating, specific artists/mappers, specific gamemodes, specific collections, etc). You can also simply clean your entire library at once.
 
 # Running on macOS/Linux
+
+## $${\color{red}I\ DO\ NOT\ OWN\ A\ MAC\ OR\ LINUX\ DEVICE\ AND\ CANNOT\ GUARANTEE\ THIS\}$$
+## $${\color{red}WILL\ WORK\ FOR\ YOU!\}$$
 
 ## For Intel-based Macs, if the application is blocked:
 > - Download the latest macOS build from the Releases section (`mac-BeatmapExporter.zip`).
@@ -52,8 +57,6 @@ If you are not able to do this (for example, you do not have administrator acces
 
 Some older versions of macOS may allow the program to run right away but instead restrict its access to your osu! files or to creating exports. In this case, use the Linux method to launch via Terminal instead. 
 
-The macOS build works and I am immediately able to get it working on macOS VMs (13/15), but I understand many users have issues getting it running. The different versions of macOS respond very differently to "unknown" programs like this and it is difficult to keep it all straight. I do not own any Mac systems and am unlikely to be able to help you troubleshoot beyond guessing. 
-
 ## For Apple Silicon (M-series chips):
 
 macOS running on the M-series chips may need to run the mac-BeatmapExporter build under Rosetta. See [post #55](https://github.com/kabiiQ/BeatmapExporter/discussions/55) for a guide.
@@ -68,43 +71,6 @@ If you are not familiar with Terminal, you may need to look up how to open Termi
 `chmod +x linux-BeatmapExporter`, which marks BeatmapExporter.app as executable so that you can run it.
 > 
 > Then you can run the program with `./linux-BeatmapExporter` from the Terminal window.
-
-# Alternative Export Modes
-
-### Audio Export
-
-As of version 1.2, there is an option to export only audio files. Rather than entire beatmap archives, only .mp3 audio files will be exported. 
-
-The .mp3 files are tagged with basic artist/song information, and the background file from osu! is embedded where possible. 
-
-If a beatmap uses a non-mp3 audio format, [FFmpeg](https://ffmpeg.org/download.html) is required to transcode into mp3. ffmpeg.exe (for Windows) can be placed on your system PATH or simply alongside BeatmapExporter.exe before launching BeatmapExporter.
-
-### Background Image Export
-
-As of version 1.3.8, there is an option to export only [beatmap background image files](https://github.com/kabiiQ/BeatmapExporter/pull/10).
-
-### User Score/Replay Export
-
-As of version 2.1.0, there is an option to export your [score replays](https://github.com/kabiiQ/BeatmapExporter/pull/17) from specific beatmaps.
-
-### Songs Folder Export
-
-As of version 2.2.0, there is an option to export as a "Songs" folder rather than seperate .osz archives. This may be more convenient if transferring directly to stable. 
-
-### `collection.db` Export / Merge
-
-As of version 2.4.0, there is an option to export your osu! beatmap collections into the `collection.db` file format supported by osu! stable.
-
-Only beatmaps that are in an osu! collection (and also selected by the filters you may apply) are included in the collection file.
-
-This export mode is also capable of merging with an existing `collection.db` file, if you place it into the export location before running the export. 
-This allows you to add your osu! Lazer collections into an existing `collection.db` from osu! (stable).
-
-This feature is different from normal exporting in that it modifies your files. You should back up your original `collection.db` in a different location first.
-
-### Skin Export
-
-As of version 2.7.0, there is an option to export your osu! skins. This was added by request to enable recovery of skins from a different Lazer install. Individual skins (and beatmaps) are exportable from the game itself.
 
 ## Note on Windows DPI Scaling
 
