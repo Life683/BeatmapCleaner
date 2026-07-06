@@ -65,7 +65,7 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB
         {
             RealmConfiguration config = new(database)
             {
-                IsReadOnly = true,
+                IsReadOnly = false, // Allow writing
                 SchemaVersion = LazerSchemaVersion,
                 Schema = new[] {
                     typeof(Beatmap),
@@ -116,7 +116,7 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB
         /// </summary>
         /// <param name="hash">The hashed lazer file name</param>
         /// <returns>The file path on disk</returns>
-        string HashedFilePath(string hash) => Path.Combine(filesDirectory, hash[..1], hash[..2], hash);
+        public string HashedFilePath(string hash) => Path.Combine(filesDirectory, hash[..1], hash[..2], hash); // make public
 
         /// <summary>
         /// Opens a file from a lazer file hash
@@ -129,7 +129,8 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB
             {
                 string path = HashedFilePath(hash);
                 return File.Open(path, FileMode.Open);
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 throw new IOException($"Unable to open file: {hash} :: {e.Message}", e);
             }
@@ -143,9 +144,9 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB
         /// <returns>A FileStream to the file content, null if the file was not found in the beatmap</returns>
         public FileStream? OpenNamedFile(BeatmapSet set, string filename)
         {
-            // get named file from specific beatmap - check if it exists in this beatmap
+            // get named file from specific beatmap, check if it exists in this beatmap
             string? fileHash = set.NamedFiles.FirstOrDefault(f => f.Filename == filename)?.File?.Hash;
-            if(fileHash is null)
+            if (fileHash is null)
             {
                 return null;
             }
@@ -153,7 +154,8 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB
             try
             {
                 return File.Open(path, FileMode.Open); // Throws IOException
-            } catch(Exception e)
+            }
+            catch (Exception e)
             {
                 throw new IOException($"Unable to open file: {filename} from beatmap {set.ArchiveFilename()}", e);
             }

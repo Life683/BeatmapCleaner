@@ -44,6 +44,8 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema
         public DateTimeOffset? LastLocalUpdate { get; set; }
 
         public DateTimeOffset? LastOnlineUpdate { get; set; }
+        public int EndTimeObjectCount { get; set; } = -1;
+        public int TotalObjectCount { get; set; } = -1;
 
         public bool Hidden { get; set; }
 

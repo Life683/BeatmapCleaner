@@ -4,7 +4,12 @@ using BeatmapExporterCore.Exporters.Stable.Collections;
 using BeatmapExporterCore.Filters;
 using BeatmapExporterCore.Utilities;
 using Nito.AsyncEx;
+using Realms;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace BeatmapExporterCore.Exporters.Lazer
@@ -20,7 +25,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
     public class LazerExporter : IBeatmapExporter
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        
+
         readonly LazerDatabase lazerDb;
         readonly Transcoder transcoder;
 
@@ -44,6 +49,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
             SelectedBeatmapSets = AllBeatmapSets;
             TotalBeatmapSetCount = AllBeatmapSets.Count;
             SelectedBeatmapSetCount = TotalBeatmapSetCount;
+            SelectedBeatmapSetIds = AllBeatmapSets.Select(s => s.ID).ToList();
 
             allBeatmapDiffs = AllBeatmapSets.SelectMany(s => s.Beatmaps).ToList();
 
@@ -98,7 +104,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
         {
             get;
         }
-        
+
         /// <summary>
         /// The beatmap sets currently selected, after filters are applied.
         /// </summary>
@@ -108,9 +114,12 @@ namespace BeatmapExporterCore.Exporters.Lazer
             private set;
         }
 
+        public List<Guid> SelectedBeatmapSetIds { get; private set; } = new();
+
         /// <summary>
         /// Count of the individual beatmap difficulties currently selected, after filters are applied.
         /// </summary>
+
         public int SelectedBeatmapCount
         {
             get;
@@ -184,7 +193,8 @@ namespace BeatmapExporterCore.Exporters.Lazer
             {
                 var parent = Directory.GetParent(Configuration.ExportPath)!;
                 path = parent.FullName;
-            } else
+            }
+            else
             {
                 path = Configuration.ExportPath;
             }
@@ -243,7 +253,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
         {
             if (Configuration.ExportMp3)
             {
-                return TranscodeAvailable ? "FFmpeg FOUND, audio will be transcoded to mp3. This operation will take longer if many selected beatmaps are not in .mp3 format." 
+                return TranscodeAvailable ? "FFmpeg FOUND, audio will be transcoded to mp3. This operation will take longer if many selected beatmaps are not in .mp3 format."
                     : "FFmpeg runtime not found. Beatmaps that use other audio formats than .mp3 will be skipped.\nMake sure ffmpeg.exe is located on the system PATH or placed in the directory with this BeatmapExporter.exe to enable transcoding.";
             }
             else
@@ -251,7 +261,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
                 return "All audio files will be exported in their original file format without conversion.";
             }
         }
-        
+
         public record struct AudioExportTask(BeatmapSet OriginSet, BeatmapMetadata AudioFile, string? TranscodeFrom, string OutputFilename);
 
         /// <summary>
@@ -296,7 +306,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
         /// <exception cref="TranscodeException">Audio transcode is required for this file and has failed.</exception>
         /// <exception cref="Exception">General audio file export has failed.</exception>
         public void ExportAudio(AudioExportTask export, Action<Exception>? metadataFailure)
-        {            
+        {
             var (mapset, metadata, transcodeFrom, outputFilename) = export;
             string outputFile = Path.Combine(Configuration.ExportPath, outputFilename);
 
@@ -305,7 +315,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
             {
                 throw new IOException($"Audio file {metadata.AudioFile} not found in beatmap {mapset.ArchiveFilename()}.");
             }
-                
+
             // Create physical .mp3 file, either through transcoding or simple copying
             if (transcodeFrom != null)
             {
@@ -338,7 +348,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
             try
             {
                 var mp3 = TagLib.File.Create(outputFile);
-                
+
                 // Remove existing tags from mp3 file and use info from beatmap
                 mp3.Tag.Clear();
                 mp3.Tag.Title = metadata.Title;
@@ -410,10 +420,10 @@ namespace BeatmapExporterCore.Exporters.Lazer
         public void ExportBackground(BackgroundExportTask export)
         {
             var (mapset, metadata, outputFilename) = export;
-            
-            if (metadata.BackgroundFile is null) 
+
+            if (metadata.BackgroundFile is null)
                 throw new InvalidOperationException($"Beatmap {mapset.ArchiveFilename()} has no background file.");
-            
+
             string outputFile = Path.Combine(Configuration.ExportPath, outputFilename);
             using FileStream? background = lazerDb.OpenNamedFile(mapset, metadata.BackgroundFile);
             if (background is null)
@@ -446,7 +456,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
             using FileStream output = File.Open(outputFile, FileMode.CreateNew);
             replay.CopyTo(output);
         }
-        
+
         /// <summary>
         /// Export a single osu!lazer skin
         /// </summary>
@@ -503,7 +513,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
                 string outputFile = Path.Combine(mapDir, namedFile.Filename);
                 // mkdirs - beatmap set may contain sub directories for storyboard files etc
                 var dir = Path.GetDirectoryName(outputFile);
-                if (dir != null) 
+                if (dir != null)
                     Directory.CreateDirectory(dir);
 
                 using FileStream output = File.Create(outputFile);
@@ -536,7 +546,8 @@ namespace BeatmapExporterCore.Exporters.Lazer
             {
                 // Attempt to open an existing collection.db file for merging
                 return CollectionDb.Open(Configuration.ExportPath, Configuration.MergeCaseInsensitive);
-            } else
+            }
+            else
             {
                 // Create a clean new collection db for export
                 return new CollectionDb();
@@ -613,7 +624,7 @@ namespace BeatmapExporterCore.Exporters.Lazer
                                 targetCollection = requestedFilter;
                             }
                         }
-                        if(targetCollection != null)
+                        if (targetCollection != null)
                         {
                             filteredCollections.Add(targetCollection);
                         }
@@ -693,6 +704,100 @@ namespace BeatmapExporterCore.Exporters.Lazer
             SelectedBeatmapSets = selectedSets;
             SelectedBeatmapSetCount = selectedSetCount;
             SelectedBeatmapCount = selectedCount;
+            SelectedBeatmapSetIds = selectedSets.Select(s => s.ID).ToList();
+        }
+
+        /// <summary>
+        /// Proceses beatmap cleaning on a background thread using a localized database instance.
+        /// </summary>
+        public void CleanBeatmapsById(List<Guid> mapsetIds)
+        {
+            using var threadSafeRealm = lazerDb.Open();
+
+            string pixelPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "pixel.png");
+            string[] imageVideoExts = { ".jpg", ".jpeg", ".png", ".avi", ".mp4", ".flv", ".wmv" };
+            string[] audioExts = { ".mp3", ".ogg", ".wav" };
+
+            int cleanedSets = 0;
+            int cleanedFiles = 0;
+
+            foreach (var id in mapsetIds)
+            {
+                var mapset = threadSafeRealm.Find<BeatmapSet>(id);
+                if (mapset == null)
+                {
+                    Logger.Warn($"Clean: mapset {id} not found in Realm.");
+                    continue;
+                }
+
+                // Identify actual song files
+                HashSet<string> protectedAudio = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var fileUsage in mapset.NamedFiles.Where(f => f.Filename.EndsWith(".osu", StringComparison.OrdinalIgnoreCase)))
+                {
+                    using var stream = lazerDb.OpenHashedFile(fileUsage.File.Hash);
+                    using var reader = new StreamReader(stream);
+                    while (reader.ReadLine() is { } line)
+                    {
+                        if (line.StartsWith("AudioFilename:", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var parts = line.Split(':', 2);
+                            if (parts.Length > 1) protectedAudio.Add(parts[1].Trim());
+                            break;
+                        }
+                    }
+                }
+
+                List<RealmNamedFileUsage> itemsToUnlinkFromDb = new List<RealmNamedFileUsage>();
+
+                foreach (var fileUsage in mapset.NamedFiles.ToList())
+                {
+                    string filename = fileUsage.Filename;
+                    string ext = Path.GetExtension(filename).ToLowerInvariant();
+
+                    if (protectedAudio.Contains(filename)) continue;
+
+                    if (imageVideoExts.Contains(ext))
+                    {
+                        if (File.Exists(pixelPath))
+                        {
+                            string physicalPath = lazerDb.HashedFilePath(fileUsage.File.Hash);
+                            File.Copy(pixelPath, physicalPath, true);
+                        }
+                        else
+                        {
+                            Logger.Warn($"Clean: pixel.png not found at {pixelPath}, skipping image replacement for {filename}.");
+                        }
+                    }
+                    else if (audioExts.Contains(ext))
+                    {
+                        string physicalPath = lazerDb.HashedFilePath(fileUsage.File.Hash);
+                        if (File.Exists(physicalPath))
+                        {
+                            File.WriteAllBytes(physicalPath, Array.Empty<byte>());
+                        }
+                        itemsToUnlinkFromDb.Add(fileUsage);
+                    }
+                }
+
+                // Execute write transaction cleanly on the local background database thread context
+                if (itemsToUnlinkFromDb.Count > 0)
+                {
+                    threadSafeRealm.Write(() =>
+                    {
+                        foreach (var fileUsage in itemsToUnlinkFromDb)
+                        {
+                            mapset.NamedFiles.Remove(fileUsage);
+                        }
+                    });
+                    cleanedSets++;
+                    cleanedFiles += itemsToUnlinkFromDb.Count;
+                }
+            }
+
+            Logger.Info($"Clean complete: {cleanedSets}/{mapsetIds.Count} mapsets modified, {cleanedFiles} audio files unlinked.");
         }
     }
 }
+
+
+

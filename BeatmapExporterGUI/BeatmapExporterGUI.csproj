@@ -14,8 +14,21 @@
 
   
   <ItemGroup>
+    <AvaloniaResource Remove="Assets\pixel.png" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
     <None Remove="Assets\Exo2\Exo2.0-ExtraBold.otf" />
     <None Remove="Assets\Exo2\Exo2.0-ExtraBoldItalic.otf" />
+    <None Remove="Assets\pixel.png" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <Content Include="Assets\pixel.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

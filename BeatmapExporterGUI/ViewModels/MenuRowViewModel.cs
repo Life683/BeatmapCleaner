@@ -1,9 +1,14 @@
-﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB;
+﻿using System;
+using System.Collections.Generic;
+using BeatmapExporterCore.Exporters.Lazer.LazerDB;
 using BeatmapExporterCore.Utilities;
 using BeatmapExporterGUI.Exporter;
+using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using System.Threading;
 using System.Threading.Tasks;
+using Realms;
+using BeatmapExporterCore.Exporters.Lazer;
 
 namespace BeatmapExporterGUI.ViewModels;
 
@@ -50,7 +55,31 @@ public partial class MenuRowViewModel : ViewModelBase
         outer.Home.SetNotLoaded();
         outer.NavigateHome();
     }
-    
+
+    /// <summary>
+    /// User-requested action to clean media files from the loaded beatmaps.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanExport))]
+    public async Task Clean()
+    {
+        List<Guid> mapsetIdsToClean = Exporter.Lazer!.SelectedBeatmapSetIds;
+        Exporter.AddSystemMessage($"Cleaning {mapsetIdsToClean.Count} beatmap set(s)...");
+
+        if (mapsetIdsToClean.Count == 0)
+        {
+            Exporter.AddSystemMessage("No beatmap sets selected for cleaning.", error: true);
+            return;
+        }
+
+        await Task.Run(() =>
+        {
+            Exporter.Lazer!.CleanBeatmapsById(mapsetIdsToClean);
+        });
+
+        Exporter.AddSystemMessage("Clean media files complete.");
+    }
+
+
     // The below commands are user-requested navigation to specific program pages/functionality.
 
     [RelayCommand(CanExecute = nameof(CanNavigate))]

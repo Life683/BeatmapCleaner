@@ -21,6 +21,23 @@ namespace BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema
         public string Statistics { get; set; } = string.Empty;
         public IList<int> Pauses { get; } = null!;
         public int Rank { get; set; }
+        // Remove the [Ignored] attributes and use these types:
+        public string ClientVersion { get; set; } = string.Empty;
+        public Ruleset Ruleset { get; set; } = null!;
+        public string Hash { get; set; } = string.Empty;
+        public bool DeletePending { get; set; }
+        public long TotalScore { get; set; }
+        public long TotalScoreWithoutMods { get; set; }
+        public int TotalScoreVersion { get; set; }
+        public long? LegacyTotalScore { get; set; }
+        public bool BackgroundReprocessingFailed { get; set; }
+        public int MaxCombo { get; set; }
+        public double? PP { get; set; }
+        public long OnlineID { get; set; } = -1;
+        public long LegacyOnlineID { get; set; } = -1;
+        public string MaximumStatistics { get; set; } = string.Empty;
+        public int Combo { get; set; }
+        public bool IsLegacyScore { get; set; }
 
         // Author kabii
         /// <summary>
