@@ -5,7 +5,6 @@ using BeatmapExporterCore.Utilities;
 using BeatmapExporterGUI.Exporter;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
-using System.Threading;
 using System.Threading.Tasks;
 using Realms;
 using BeatmapExporterCore.Exporters.Lazer;
@@ -32,10 +31,10 @@ public partial class MenuRowViewModel : ViewModelBase
     /// <summary>
     /// If user navigation around the program should be allowed.
     /// </summary>
-    private bool CanNavigate => !outer.IsExporting;
+    private bool CanNavigate => !outer.IsCleaning;
 
     /// <summary>
-    /// If the user should be able to unload the osu! database or start an export.
+    /// If the user should be able to unload the osu! database or start a clean.
     /// </summary>
     private bool CanExport => DatabaseLoaded && CanNavigate;
 
@@ -71,14 +70,37 @@ public partial class MenuRowViewModel : ViewModelBase
             return;
         }
 
-        await Task.Run(() =>
+        outer.IsCleaning = true;
+        NotifyNavigationCommands();
+        try
         {
-            Exporter.Lazer!.CleanBeatmapsById(mapsetIdsToClean);
-        });
+            await Task.Run(() =>
+            {
+                Exporter.Lazer!.CleanBeatmapsById(mapsetIdsToClean);
+            });
+        }
+        finally
+        {
+            outer.IsCleaning = false;
+            NotifyNavigationCommands();
+        }
 
         Exporter.AddSystemMessage("Clean media files complete.");
     }
 
+    /// <summary>
+    /// Manually refreshes CanExecute state for commands gated on IsCleaning/CanNavigate,
+    /// since IsCleaning lives on OuterViewModel and won't auto-notify these RelayCommands.
+    /// </summary>
+    private void NotifyNavigationCommands()
+    {
+        CloseCommand.NotifyCanExecuteChanged();
+        CleanCommand.NotifyCanExecuteChanged();
+        BeatmapsCommand.NotifyCanExecuteChanged();
+        CollectionsCommand.NotifyCanExecuteChanged();
+        ConfigurationCommand.NotifyCanExecuteChanged();
+        HomeCommand.NotifyCanExecuteChanged();
+    }
 
     // The below commands are user-requested navigation to specific program pages/functionality.
 
@@ -93,9 +115,6 @@ public partial class MenuRowViewModel : ViewModelBase
 
     [RelayCommand(CanExecute = nameof(CanExport))]
     private void Configuration() => outer.EditFilters();
-
-    [RelayCommand(IncludeCancelCommand = true, CanExecute = nameof(CanExport))]
-    private async Task Export(CancellationToken token) => await outer.Export(token);
 
     // The below properties are references to the relevant BeatmapExporter version numbers
 
@@ -113,7 +132,6 @@ public partial class MenuRowViewModel : ViewModelBase
 
     public void Osu() => PlatformUtil.Open("https://github.com/ppy/osu/releases");
 
-
     /// <summary>
     /// User-requested action to view the BeatmapExporter application data
     /// </summary>
@@ -126,7 +144,6 @@ public partial class MenuRowViewModel : ViewModelBase
     private void Reset()
     {
         var defaults = new ClientSettings();
-        // Overwrite config on disk with defaults
         defaults.TrySave();
 
         Exporter.AddSystemMessage("BeatmapExporter settings/filters have been reset to defaults and the database has been unloaded.");

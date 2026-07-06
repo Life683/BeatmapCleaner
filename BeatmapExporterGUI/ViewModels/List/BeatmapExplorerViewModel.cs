@@ -1,7 +1,5 @@
 ﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +8,6 @@ namespace BeatmapExporterGUI.ViewModels.List
 {
     /// <summary>
     /// Page for exploring the files within a single beatmap set. Currently displays the beatmap difficulties on top and all files (including difficulty files) on the bottom.
-    /// Both diffs and files allow user-selection and singular export.
     /// </summary>
     public partial class BeatmapExplorerViewModel : ViewModelBase
     {
@@ -23,7 +20,6 @@ namespace BeatmapExporterGUI.ViewModels.List
             selectedSet = set;
 
             SelectedDisplayOption = parent.SelectedDisplayOption; // inherit all/selected option from parent list
-            // Do not select files for export by default
             SelectedDiffIndex = -1;
             SelectedFileIndex = -1;
             SelectedReplayIndex = -1;
@@ -88,7 +84,6 @@ namespace BeatmapExporterGUI.ViewModels.List
         /// <summary>
         /// Updates the displayed beatmap difficulties to match the current <see cref="SelectedDisplayOption" />
         /// </summary>
-        /// <returns></returns>
         private async Task ApplyDisplaySetting() => await Exporter.RealmScheduler.Schedule(() =>
         {
             if (SelectedDisplayOption == (int)BeatmapSorting.View.Selected)
@@ -103,7 +98,7 @@ namespace BeatmapExporterGUI.ViewModels.List
         });
         #endregion
 
-        #region File Display/Selection
+        #region File/Replay Display
         /// <summary>
         /// The string representations for the difficulties listed within this beatmap set, indexed 1:1 to <see cref="DisplayedDiffs" />
         /// </summary>
@@ -114,21 +109,18 @@ namespace BeatmapExporterGUI.ViewModels.List
         /// The index of the currently user-selected difficulty, indexed to both <see cref="DisplayedDiffs" /> and <see cref="DiffNames" />
         /// </summary>
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(ExportSelectedDifficultyCommand))]
         private int _SelectedDiffIndex;
 
         /// <summary>
         /// The index of the currently user-selected file, indexed to both <see cref="FileNames" /> and <see cref="BeatmapSet.Files" />
         /// </summary>
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(ExportSelectedFileCommand))]
         private int _SelectedFileIndex;
 
         /// <summary>
         /// The index of the currently user-selected score replay, indexed to both <see cref="BeatmapScores"/> and <see cref="Replays" />
         /// </summary>
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(ExportSelectedReplayCommand))]
         private int _SelectedReplayIndex;
 
         /// <summary>
@@ -140,94 +132,6 @@ namespace BeatmapExporterGUI.ViewModels.List
         /// The string representations for the player replays for this beatmap set.
         /// </summary>
         public List<string> Replays { get; private set; }
-        #endregion
-
-        #region Selection Export
-        /// <summary>
-        /// If a beatmap difficulty is currently selected by the user.
-        /// </summary>
-        public bool CanExportDiff => SelectedDiffIndex != -1;
-
-        /// <summary>
-        /// If a beatmap file is currently selected by the user.
-        /// </summary>
-        public bool CanExportFile => SelectedFileIndex != -1;
-
-        /// <summary>
-        /// If a score replay is currently selected by the user.
-        /// </summary>
-        public bool CanExportReplay => SelectedReplayIndex != -1;
-
-        /// <summary>
-        /// Exports a single user-selected beatmap difficulty from within a beatmap set
-        /// The exported set includes all beatmap files except any other difficulties 
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanExportDiff))]
-        private async Task ExportSelectedDifficulty() => await Exporter.RealmScheduler.Schedule(async () =>
-        {
-            var selectedDiff = DisplayedDiffs[SelectedDiffIndex];
-
-            // Temporarly mark only UI-selected diff as 'selected' internally
-            var initialSelection = selectedSet.SelectedBeatmaps.ToList();
-            selectedSet.SelectedBeatmaps = new List<Beatmap>()
-            {
-                selectedDiff
-            };
-
-            try
-            {
-                await beatmapListView.ExportSelectedBeatmap();
-            }
-            finally
-            {
-                // restore initial difficulty selection
-                selectedSet.SelectedBeatmaps = initialSelection;
-            }
-        });
-
-        /// <summary>
-        /// Exports a single user-selected file from within a beatmap set
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanExportFile))]
-        private async Task ExportSelectedFile() => await Exporter.RealmScheduler.Schedule(() =>
-        {
-            var lazer = Exporter.Lazer!;
-            lazer.SetupExport(beatmapListView.ShouldOpenDirectory);
-
-            string? filename = null;
-            try
-            {
-                var selectedFile = selectedSet.Files[SelectedFileIndex];
-                filename = selectedFile.Filename;
-                lazer.ExportSingleFile(selectedFile);
-                Exporter.AddSystemMessage($"Single file exported: {lazer.Configuration.FullPath}/{filename}");
-            }
-            catch (Exception e)
-            {
-                Exporter.AddSystemMessage($"Failed to export single file {filename} :: {e.Message}", error: true);
-            }
-        });
-
-        /// <summary>
-        /// Exports a single user-selected score replay from within a beatmap set
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanExportReplay))]
-        private async Task ExportSelectedReplay() => await Exporter.RealmScheduler.Schedule(() =>
-        {
-            var lazer = Exporter.Lazer!;
-            lazer.SetupExport(beatmapListView.ShouldOpenDirectory);
-
-            string? filename = null;
-            try
-            {
-                var selectedReplay = BeatmapScores[SelectedReplayIndex];
-                lazer.ExportReplay(selectedReplay, out filename);
-                Exporter.AddSystemMessage($"{selectedReplay.User.Username} replay exported: {lazer.Configuration.FullPath}/{filename}");
-            } catch (Exception e)
-            {
-                Exporter.AddSystemMessage($"Failed to export replay {filename} :: {e.Message}", error: true);
-            }
-        });
         #endregion
     }
 }

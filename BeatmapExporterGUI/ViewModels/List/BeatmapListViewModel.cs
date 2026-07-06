@@ -1,6 +1,5 @@
 ﻿using BeatmapExporterCore.Exporters.Lazer.LazerDB.Schema;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +12,8 @@ namespace BeatmapExporterGUI.ViewModels.List
     /// </summary>
     public partial class BeatmapListViewModel : ViewModelBase
     {
-        private bool hasExported = false; // if this list view has exported beatmaps already
-
         public BeatmapListViewModel()
         {
-            hasExported = false;
-
             BeatmapSetList = new();
             _DisplayedBeatmapSets = new();
 
@@ -44,7 +39,6 @@ namespace BeatmapExporterGUI.ViewModels.List
         /// The currently selected beatmap set by the user.
         /// </summary>
         [ObservableProperty]
-        [NotifyCanExecuteChangedFor(nameof(ExportEntireBeatmapSetCommand))]
         private int _SelectedSetIndex;
 
         /// <summary>
@@ -101,13 +95,11 @@ namespace BeatmapExporterGUI.ViewModels.List
             {
                 var sortBy = (BeatmapSorting.SortBy)SelectedSortOption;
 
-                // Build a stable sort by secondary sorting on beatmap UUID
                 int stableComparer(BeatmapSet x, BeatmapSet y)
                 {
                     var selectedSort = sortBy.Comparer()(x, y);
                     if (selectedSort == 0)
                     {
-                        // requested sort has "equal" beatmap sets, perform secondary sort
                         return x.ID.CompareTo(y.ID);
                     }
                     return selectedSort;
@@ -130,7 +122,6 @@ namespace BeatmapExporterGUI.ViewModels.List
 
         private async Task ApplyDisplaySetting() => await Exporter.RealmScheduler.Schedule(() =>
         {
-            // Determine all possible displayable maps based on display setting
             IEnumerable<BeatmapSet> displayMaps;
             if (SelectedDisplayOption == (int)BeatmapSorting.View.Selected)
             {
@@ -140,7 +131,6 @@ namespace BeatmapExporterGUI.ViewModels.List
             {
                 displayMaps = Exporter.Lazer!.AllBeatmapSets;
             }
-            // Then, filter displayable maps if user has a filter input specified
             if (!string.IsNullOrWhiteSpace(UserSearchInput))
             {
                 displayMaps = displayMaps.Where(set => set.DiffSummary().Contains(UserSearchInput, StringComparison.OrdinalIgnoreCase));
@@ -156,78 +146,6 @@ namespace BeatmapExporterGUI.ViewModels.List
         {
             Task.Run(() => ApplyDisplaySetting());
         }
-        #endregion
-
-        #region Single Beatmap Export
-        /// <summary>
-        /// Represents whether the directory should be opened for the user. Returns true for the first access only. 
-        /// </summary>
-        public bool ShouldOpenDirectory
-        {
-            get
-            {
-                if (hasExported)
-                {
-                    return false;
-                }
-                hasExported = true;
-                return true;
-            }
-        }
-        /// <summary>
-        /// If a beatmap set is currently selected by the user.
-        /// </summary>
-        public bool CanExportBeatmapSet => SelectedSetIndex != -1;
-
-        /// <summary>
-        /// Export the entire currently user-selected beatmap set, ignoring other filters
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanExportBeatmapSet))]
-        private async Task ExportEntireBeatmapSet()
-        {
-            var selectedSet = DisplayedBeatmapSets[SelectedSetIndex];
-            var initialSelection = selectedSet.SelectedBeatmaps.ToList();
-            
-            if (BeatmapExplorer?.SelectedDisplayOption == (int)BeatmapSorting.View.All)
-            {
-                // Temporarily select all difficulties for this set for export
-                selectedSet.SelectedBeatmaps = selectedSet.Beatmaps;
-            }
-
-            try
-            {
-                await ExportSelectedBeatmap();
-            }
-            finally
-            {
-                selectedSet.SelectedBeatmaps = initialSelection;
-            }
-        }
-
-        /// <summary>
-        /// Exports a single user-selected beatmap set
-        /// </summary>
-        public async Task ExportSelectedBeatmap()
-        {
-            var exportSet = DisplayedBeatmapSets[SelectedSetIndex];
-            var lazer = Exporter.Lazer!;
-            lazer.SetupExport(ShouldOpenDirectory);
-            string? filename = null;
-            try
-            {
-                await Exporter.RealmScheduler.Schedule(() => lazer.ExportBeatmap(exportSet, out filename));
-                Exporter.AddSystemMessage($"Single beatmap exported: {lazer.Configuration.FullPath}/{filename}");
-            }
-            catch (Exception e)
-            {
-                Exporter.AddSystemMessage($"Failed to export single beatmap {filename} :: {e.Message}", error: true);
-            }
-        }
-
-        /// <summary>
-        /// User-requested input to manually open the export directory.
-        /// </summary>
-        public void OpenExportDirectory() => Exporter.Lazer!.SetupExport();
         #endregion
     }
 }

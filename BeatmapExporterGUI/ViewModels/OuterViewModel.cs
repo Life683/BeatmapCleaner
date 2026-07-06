@@ -2,8 +2,6 @@
 using BeatmapExporterGUI.ViewModels.List;
 using BeatmapExporterGUI.ViewModels.Settings;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace BeatmapExporterGUI.ViewModels;
 
@@ -16,7 +14,6 @@ public partial class OuterViewModel : ViewModelBase
     {
         Home = new HomeViewModel();
         MenuRow = new MenuRowViewModel(this);
-
         CurrentOperation = Home;
     }
 
@@ -52,22 +49,13 @@ public partial class OuterViewModel : ViewModelBase
     public void ListCollections() => CurrentOperation = new CollectionListViewModel();
 
     /// <summary>
-    /// Changes the active operation to the export filters/settings page.
+    /// Changes the active operation to the filters/settings page used to select beatmaps for cleaning.
     /// </summary>
     public void EditFilters() => CurrentOperation = new ExportConfigViewModel(this);
 
     /// <summary>
-    /// Changes the active operation to the export page and begins the export operation immediately.
+    /// If a clean operation is actively running. Used to block navigation while cleaning is in progress.
     /// </summary>
-    public async Task Export(CancellationToken token)
-    {
-        var export = new ExportViewModel(this);
-        CurrentOperation = export;
-        await export.StartExport(token);
-    }
-    
-    /// <summary>
-    /// If the current operation is an actively running export.
-    /// </summary>
-    public bool IsExporting => (CurrentOperation as ExportViewModel)?.ActiveExport ?? false;
+    [ObservableProperty]
+    private bool _IsCleaning;
 }

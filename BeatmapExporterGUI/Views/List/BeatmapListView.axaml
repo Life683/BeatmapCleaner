@@ -6,91 +6,68 @@
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="1024"
              x:Class="BeatmapExporterGUI.Views.List.BeatmapListView"
              x:DataType="vm:BeatmapListViewModel">
+	<Grid ColumnDefinitions="*,*"
+		  Margin="6">
+		<Border BorderBrush="Black"
+				BorderThickness="0,0,1,0"
+				Grid.Column="0">
+			<StackPanel Margin="6"
+						Spacing="24">
+				<TextBlock FontSize="24"
+						   HorizontalAlignment="Center">Beatmap List</TextBlock>
+				<StackPanel Spacing="12">
+					<DockPanel>
+						<StackPanel DockPanel.Dock="Right"
+									Orientation="Horizontal">
+							<TextBlock VerticalAlignment="Center">Sort by:</TextBlock>
+							<ComboBox Margin="6,0"
+									  ItemsSource="{Binding SortOptionNames}"
+									  SelectedIndex="{Binding SelectedSortOption}" />
+						</StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock VerticalAlignment="Center">View:</TextBlock>
+							<ComboBox Margin="6,0"
+									ItemsSource="{Binding DisplayOptionNames}"
+									SelectedIndex="{Binding SelectedDisplayOption}" />
 
-  <Grid ColumnDefinitions="*,*"
-        Margin="6">
+						</StackPanel>
+					</DockPanel>
+					<!-- Search/Filter Box -->
+					<StackPanel Orientation="Horizontal">
+						<TextBox Watermark="Search..."
+								 Width="216"
+								 Text="{Binding UserSearchInput} "/>
 
-    <Border BorderBrush="Black"
-            BorderThickness="0,0,1,0"
-            Grid.Column="0">
+					</StackPanel>
+				</StackPanel>
+				<ListBox ItemsSource="{Binding BeatmapSetList}"
+						 SelectedIndex="{Binding SelectedSetIndex}"
+						 Name="BeatmapList"
+						 Background="Transparent">
 
-      <StackPanel Margin="6"
-                  Spacing="24">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
 
-        <TextBlock FontSize="24"
-                   HorizontalAlignment="Center">Beatmap List</TextBlock>
+							<TextBlock Text="{Binding}"
+									   TextWrapping="Wrap" />
 
-        <StackPanel Spacing="12">
-          <DockPanel>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
 
-            <StackPanel DockPanel.Dock="Right"
-                        Orientation="Horizontal">
 
-              <TextBlock VerticalAlignment="Center">Sort by:</TextBlock>
-              <ComboBox Margin="6,0"
-                        ItemsSource="{Binding SortOptionNames}"
-                        SelectedIndex="{Binding SelectedSortOption}" />
+				</ListBox>
+			</StackPanel>
 
-            </StackPanel>
+		</Border>
+		<StackPanel Grid.Column="1"
+					Margin="6"
+					Spacing="24">
+			<TextBlock FontSize="24"
+					   HorizontalAlignment="Center">Beatmap File Viewer</TextBlock>
 
-            <StackPanel Orientation="Horizontal">
+			<TransitioningContentControl Content="{Binding BeatmapExplorer}" />
+		</StackPanel>
 
-              <TextBlock VerticalAlignment="Center">View:</TextBlock>
-              <ComboBox Margin="6,0"
-                      ItemsSource="{Binding DisplayOptionNames}"
-                      SelectedIndex="{Binding SelectedDisplayOption}" />
-            
-            </StackPanel>
+	</Grid>
 
-            <Button Command="{Binding ExportEntireBeatmapSetCommand}">Export Selected Beatmap Set</Button>
-
-            <Button Command="{Binding OpenExportDirectory}"
-                    Margin="6,0">Open Export Directory</Button>
-          
-          </DockPanel>
-
-          <!-- Search/Filter Box -->
-          <StackPanel Orientation="Horizontal">
-
-            <TextBox Watermark="Search..." 
-                     Width="216" 
-                     Text="{Binding UserSearchInput} "/>
-          
-          </StackPanel>
-        </StackPanel>
-
-        <ListBox ItemsSource="{Binding BeatmapSetList}"
-                 SelectedIndex="{Binding SelectedSetIndex}"
-                 Name="BeatmapList"
-                 Background="Transparent">
-          
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              
-              <TextBlock Text="{Binding}"
-                         TextWrapping="Wrap" />
-              
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-          
-          
-        </ListBox>
-
-      </StackPanel>
-      
-    </Border>
-
-    <StackPanel Grid.Column="1"
-                Margin="6"
-                Spacing="24">
-
-      <TextBlock FontSize="24"
-                 HorizontalAlignment="Center">Beatmap File Viewer</TextBlock>
-      
-      <TransitioningContentControl Content="{Binding BeatmapExplorer}" />
-
-    </StackPanel>
-    
-  </Grid>
-  
 </UserControl>

@@ -6,52 +6,47 @@
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="72"
              x:Class="BeatmapExporterGUI.Views.MenuRowView"
              x:DataType="vm:MenuRowViewModel">
+	<Menu>
 
-  <Menu>
-    
-    <MenuItem Header="_File">
-      <MenuItem Header="_Home" 
-                Command="{Binding HomeCommand}" />
-      <MenuItem Header="_Close Database"
-                Command="{Binding CloseCommand}" />
-      <Separator />
-      <MenuItem Header="_Exit BeatmapCleaner"
-                Command="{Binding ExitCommand}"/>
-    </MenuItem>
+		<MenuItem Header="_File">
+			<MenuItem Header="_Home"
+					  Command="{Binding HomeCommand}" />
+			<MenuItem Header="_Close Database"
+					  Command="{Binding CloseCommand}" />
+			<Separator />
+			<MenuItem Header="_Exit BeatmapCleaner"
+					  Command="{Binding ExitCommand}"/>
+		</MenuItem>
+		<MenuItem Header="_Clean">
+			<MenuItem Header="View _Beatmaps"
+					  Command="{Binding BeatmapsCommand}" />
+			<MenuItem Header="View _Collections"
+					  Command="{Binding CollectionsCommand}" />
+			<Separator />
+			<MenuItem Header="_Filter Beatmaps to Clean"
+					  Command="{Binding ConfigurationCommand}" />
+			<MenuItem Header="_Clean Media Files"
+					  Command="{Binding CleanCommand}" />
+		</MenuItem>
 
-	  <MenuItem Header="_Clean">
-		  <MenuItem Header="View _Beatmaps"
-					Command="{Binding BeatmapsCommand}" />
-		  <MenuItem Header="View _Collections"
-					Command="{Binding CollectionsCommand}" />
-		  <Separator />
-		  <MenuItem Header="_Filter/Export Beatmaps"
-					Command="{Binding ConfigurationCommand}" />
-		  <MenuItem Header="Begin Export _Now"
-					Command="{Binding ExportCommand}" />
-		  <MenuItem Header="_Clean Media Files"
-					Command="{Binding CleanCommand}" />
-	  </MenuItem>
-    
-    <MenuItem Header="_About">
-      <MenuItem Header="{Binding ProgramVersion, StringFormat=BeatmapCleaner version: {0}}"
-                IsEnabled="False" />
-      <MenuItem Header="{Binding LazerVersion, StringFormat=Built for osu!lazer release: {0}}"
-                IsEnabled="False" />
-      <MenuItem Header="{Binding DatabaseVersion, StringFormat=osu!lazer database version: {0}}"
-                IsEnabled="False" />
-      <MenuItem Header="BeatmapCleaner _GitHub Project"
-                Command="{Binding GitHub}" />
-      <MenuItem Header="BeatmapCleaner Releases"
-                Command="{Binding Releases}" />
-      <MenuItem Header="osu! GitHub Releases"
-                Command="{Binding Osu}" />
-      <Separator />
-      <MenuItem Header="_View BeatmapCleaner AppData"
-                Command="{Binding ApplicationData}" />
-      <MenuItem Header="_Reset BeatmapCleaner Settings"
-                Command="{Binding ResetCommand}" />
-    </MenuItem>
-  </Menu>
-
+		<MenuItem Header="_About">
+			<MenuItem Header="{Binding ProgramVersion, StringFormat=BeatmapCleaner version: {0}}"
+					  IsEnabled="False" />
+			<MenuItem Header="{Binding LazerVersion, StringFormat=Built for osu!lazer release: {0}}"
+					  IsEnabled="False" />
+			<MenuItem Header="{Binding DatabaseVersion, StringFormat=osu!lazer database version: {0}}"
+					  IsEnabled="False" />
+			<MenuItem Header="BeatmapCleaner _GitHub Project"
+					  Command="{Binding GitHub}" />
+			<MenuItem Header="BeatmapCleaner Releases"
+					  Command="{Binding Releases}" />
+			<MenuItem Header="osu! GitHub Releases"
+					  Command="{Binding Osu}" />
+			<Separator />
+			<MenuItem Header="_View BeatmapCleaner AppData"
+					  Command="{Binding ApplicationData}" />
+			<MenuItem Header="_Reset BeatmapCleaner Settings"
+					  Command="{Binding ResetCommand}" />
+		</MenuItem>
+	</Menu>
 </UserControl>

@@ -7,195 +7,86 @@
              x:Class="BeatmapExporterGUI.Views.Settings.ExportConfigView"
              x:DataType="vm:ExportConfigViewModel">
 
-  <Grid ColumnDefinitions="*,*"
-        Margin="6">
-    
-    <!-- Left side: Filter editing -->
-    <Border BorderBrush="Black"
-            BorderThickness="0,0,1,0"
-            Grid.Column="0">
+	<Grid Margin="6">
 
-      <StackPanel Margin="6"
-                  Spacing="24">
+		<StackPanel Margin="6"
+					Spacing="24"
+					MaxWidth="800"
+					HorizontalAlignment="Center">
 
-        <TextBlock FontSize="24"
-                   HorizontalAlignment="Center">Beatmap Selection/Filters</TextBlock>
+			<TextBlock FontSize="24"
+					   HorizontalAlignment="Center">Beatmap Selection/Filters</TextBlock>
 
-        <Grid RowDefinitions="*,*">
+			<Grid RowDefinitions="*,*">
 
-          <!-- Current filters -->
-          <StackPanel Grid.Row="0"
-                      MinHeight="200"
-                      MaxHeight="600"
-                      Spacing="12">
+				<StackPanel Grid.Row="0"
+							MinHeight="200"
+							MaxHeight="600"
+							Spacing="12">
 
-            <TextBlock Text="{Binding SelectionSummary}" />
+					<TextBlock Text="{Binding SelectionSummary}" />
 
-            <WrapPanel Orientation="Horizontal">
+					<WrapPanel Orientation="Horizontal">
 
-              <Button Command="{Binding CreateFilterBuilder}"
-                      Margin="5">
-                <StackPanel Orientation="Horizontal"
-                            Spacing="6">
-                  <PathIcon Data="{StaticResource add_square_regular}"
-                            VerticalAlignment="Center" />
-                  <TextBlock VerticalAlignment="Center">Add New Filter</TextBlock>
-                </StackPanel>
-              </Button>
-              
-              <Button Command="{Binding RemoveSelectedFilterCommand}"
-                      Margin="5">
-                Remove Selected Filter
-              </Button>
-              
-              <Button Command="{Binding ResetFiltersCommand}"
-                      Margin="5">
-                Reset Filters
-              </Button>
+						<Button Command="{Binding CreateFilterBuilder}"
+								Margin="5">
+							<StackPanel Orientation="Horizontal"
+										Spacing="6">
+								<PathIcon Data="{StaticResource add_square_regular}"
+										  VerticalAlignment="Center" />
+								<TextBlock VerticalAlignment="Center">Add New Filter</TextBlock>
+							</StackPanel>
+						</Button>
 
-              <Button Command="{Binding ListBeatmapsCommand}"
-                      Margin="5">
-                View Beatmap List
-              </Button>
-              
-            </WrapPanel>
-            
-            <StackPanel Orientation="Horizontal"
-                        Spacing="12"
-                        IsVisible="{Binding ShouldDisplayFilterMode}">
+						<Button Command="{Binding RemoveSelectedFilterCommand}"
+								Margin="5">
+							Remove Selected Filter
+						</Button>
 
-              <TextBlock VerticalAlignment="Center">Maps must match ALL filters:</TextBlock>
-              <CheckBox IsChecked="{Binding CombineFilterMode}" />
+						<Button Command="{Binding ResetFiltersCommand}"
+								Margin="5">
+							Reset Filters
+						</Button>
 
-            </StackPanel>
+						<Button Command="{Binding ListBeatmapsCommand}"
+								Margin="5">
+							View Beatmap List
+						</Button>
 
-            <ListBox ItemsSource="{Binding BeatmapFilters}"
-                      SelectedIndex="{Binding SelectedFilterIndex}"
-                      Background="Transparent" />
-          
-          </StackPanel>
+					</WrapPanel>
 
-          <!-- New filter area -->
-          <StackPanel Grid.Row="1">
-            
-            <TransitioningContentControl Content="{Binding CurrentFilterCreationControl}" />
-            
-          </StackPanel>
-          
-        </Grid>
-      
-     </StackPanel>
-    </Border>
-    
-    <!-- Right side: General export settings -->
-    <StackPanel Grid.Column="1"
-                Margin="6"
-                Spacing="24">
+					<StackPanel Orientation="Horizontal"
+								Spacing="12"
+								IsVisible="{Binding ShouldDisplayFilterMode}">
 
-      <TextBlock FontSize="24"
-                 HorizontalAlignment="Center">General Export Settings</TextBlock>
+						<TextBlock VerticalAlignment="Center">Maps must match ALL filters:</TextBlock>
+						<CheckBox IsChecked="{Binding CombineFilterMode}" />
 
-      <!-- Export Mode setting -->
-      <StackPanel Spacing="6">
-        
-        <StackPanel Orientation="Horizontal"
-                    Spacing="12">
-          <TextBlock VerticalAlignment="Center">Export Mode</TextBlock>
-          <ComboBox ItemsSource="{Binding ExportModes}"
-                    SelectedIndex="{Binding SelectedExportIndex}" />
-        </StackPanel>
-        <TextBlock Text="{Binding ModeDescriptor}" />
-        
-      </StackPanel>
-      
-      <!-- Export Path setting -->
-      <StackPanel Spacing="6">
+					</StackPanel>
 
-        <TextBlock>Export Path</TextBlock>
-        <TextBlock Text="{Binding ExportPath}"
-                   TextWrapping="Wrap" />
-        
-        <StackPanel Orientation="Horizontal"
-                    Spacing="5">
-          <Button Command="{Binding SelectExportPath}">
-            Change Export Location
-          </Button>
-          <Button Command="{Binding OpenExportDirectory}"
-                  Classes.accent="{Binding ShouldDisplayMergeOptions}">
-            Open Export Directory
-          </Button>
-        </StackPanel>
+					<ListBox ItemsSource="{Binding BeatmapFilters}"
+							  SelectedIndex="{Binding SelectedFilterIndex}"
+							  Background="Transparent" />
 
-      </StackPanel>
+				</StackPanel>
 
-      <!-- Compression setting -->
-      <StackPanel Spacing="6"
-                  IsVisible="{Binding CompressionAvailable}">
-        
-        <StackPanel Orientation="Horizontal"
-                    Spacing="12">
+				<StackPanel Grid.Row="1">
 
-          <TextBlock VerticalAlignment="Center">.osz/.osk compression</TextBlock>
-          <CheckBox IsChecked="{Binding CompressionEnabled}" />
-        
-        </StackPanel>
-        <TextBlock Text="{Binding CompressionDescriptor}" />
-      
-      </StackPanel>
-      
-      <!-- Audio export file format setting -->
-      <StackPanel Spacing="6"
-                  IsVisible="{Binding IsAudioExport}">
-      
-        <StackPanel Orientation="Horizontal"
-                    Spacing="12">
-          
-          <TextBlock VerticalAlignment="Center">Export .mp3 files only</TextBlock>
-          <CheckBox IsChecked="{Binding Mp3ExportEnabled}" />
-          
-        </StackPanel>
-        <TextBlock Text="{Binding AudioExportDescriptor}" />
-        
-      </StackPanel>
-      
-        <!-- Collection Export Merge setting -->
-      <StackPanel Spacing="6"
-                  IsVisible="{Binding IsCollectionDbExport}">
+					<TransitioningContentControl Content="{Binding CurrentFilterCreationControl}" />
 
-        <StackPanel Orientation="Horizontal"
-                    Spacing="12">
+				</StackPanel>
 
-          <TextBlock VerticalAlignment="Center">Merge Existing collection.db</TextBlock>
-          <CheckBox IsChecked="{Binding MergeCollectionsEnabled}" />
-          
-        </StackPanel>
-        <TextBlock Text="{Binding MergeCollectionsDescriptor}" />
-        
-      </StackPanel>
+			</Grid>
 
-      <!-- Collection Export Capitalization setting -->
-      <StackPanel Spacing="6"
-                  IsVisible="{Binding ShouldDisplayMergeOptions}">
+			<Button Command="{Binding CleanCommand}"
+					Classes="accent"
+					FontSize="18"
+					HorizontalAlignment="Center"
+					Content="Clean Selected Beatmaps">
+			</Button>
 
-        <StackPanel Orientation="Horizontal"
-                    Spacing="12">
+		</StackPanel>
 
-          <TextBlock VerticalAlignment="Center">Case-Insensitive Merge</TextBlock>
-          <CheckBox IsChecked="{Binding MergeCaseInsensitive}" />
+	</Grid>
 
-        </StackPanel>
-        <TextBlock Text="{Binding MergeCaseDescriptor}" />
-
-      </StackPanel>
-
-      <Button Command="{Binding ExportBeatmapsCommand}"
-              Classes="accent"
-              FontSize="18"
-              Content="{Binding ExportUnit, StringFormat=Export selection as {0}}">
-      </Button>
-      
-    </StackPanel>
-    
-  </Grid>
-  
 </UserControl>

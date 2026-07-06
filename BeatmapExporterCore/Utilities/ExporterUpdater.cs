@@ -2,8 +2,8 @@
 {
     public static class ExporterUpdater
     {
-        public const string Version = "1.0.0"; // raw version, user is notified if their version is different than the online latest
-        public const string FeatureVersion = "1.0.0"; // version with prerelease flag etc.
+        public const string Version = "1.1.0"; // raw version, user is notified if their version is different than the online latest
+        public const string FeatureVersion = "1.1.0"; // version with prerelease flag etc.
 
         public const string Project = "https://github.com/Life683/BeatmapCleaner";
         public const string Releases = $"{Project}/releases";
@@ -25,7 +25,7 @@
                 {
                     Timeout = TimeSpan.FromSeconds(5)
                 };
-                var latest = await client.GetStringAsync(VersionDoc);
+                var latest = (await client.GetStringAsync(VersionDoc)).Trim();
                 if (latest != Version)
                 {
                     return new Update(Version, latest);

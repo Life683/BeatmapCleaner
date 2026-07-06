@@ -6,49 +6,37 @@
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="1024"
              x:Class="BeatmapExporterGUI.Views.List.BeatmapExplorerView"
              x:DataType="vm:BeatmapExplorerViewModel">
+	<StackPanel Spacing="12">
+		<StackPanel Orientation="Horizontal"
+					Spacing="6">
 
-  <StackPanel Spacing="12">
+			<TextBlock VerticalAlignment="Center">View:</TextBlock>
+			<ComboBox ItemsSource="{Binding DisplayOptionNames}"
+					  SelectedIndex="{Binding SelectedDisplayOption}" />
 
-    <StackPanel Orientation="Horizontal"
-                Spacing="6">
-      
-      <TextBlock VerticalAlignment="Center">View/Export:</TextBlock>
-      <ComboBox ItemsSource="{Binding DisplayOptionNames}"
-                SelectedIndex="{Binding SelectedDisplayOption}" />
+		</StackPanel>
+		<TextBlock Text="{Binding SetName, StringFormat=Selected beatmap set: {0}}"
+				   FontSize="18"
+				   TextWrapping="Wrap" />
+		<TextBlock FontSize="18">Beatmap Difficulties</TextBlock>
 
-      <Button Command="{Binding ExportSelectedDifficultyCommand}">Export Selected Difficulty</Button>
+		<ListBox ItemsSource="{Binding DiffNames}"
+				 SelectedIndex="{Binding SelectedDiffIndex}"
+				 Name="DiffList"
+				 Background="Transparent" />
+		<TextBlock FontSize="18">All Beatmap Files</TextBlock>
 
-      <Button Command="{Binding ExportSelectedFileCommand}">Export Selected File</Button>
+		<ListBox ItemsSource="{Binding FileNames}"
+				 SelectedIndex="{Binding SelectedFileIndex}"
+				 Name="FileList"
+				 Background="Transparent" />
+		<TextBlock FontSize="18">Player Score Replays</TextBlock>
 
-      <Button Command="{Binding ExportSelectedReplayCommand}">Export Selected Replay</Button>
-      
-    </StackPanel>
+		<ListBox ItemsSource="{Binding Replays}"
+				 SelectedIndex="{Binding SelectedReplayIndex}"
+				 Name="ReplayList"
+				 Background="Transparent" />
 
-    <TextBlock Text="{Binding SetName, StringFormat=Selected beatmap set: {0}}"
-               FontSize="18"
-               TextWrapping="Wrap" />
+	</StackPanel>
 
-    <TextBlock FontSize="18">Beatmap Difficulties</TextBlock>
-    
-    <ListBox ItemsSource="{Binding DiffNames}"
-             SelectedIndex="{Binding SelectedDiffIndex}"
-             Name="DiffList"
-             Background="Transparent" />
-
-    <TextBlock FontSize="18">All Beatmap Files</TextBlock>
-    
-    <ListBox ItemsSource="{Binding FileNames}" 
-             SelectedIndex="{Binding SelectedFileIndex}"
-             Name="FileList"
-             Background="Transparent" />
-
-    <TextBlock FontSize="18">Player Score Replays</TextBlock>
-    
-    <ListBox ItemsSource="{Binding Replays}"
-             SelectedIndex="{Binding SelectedReplayIndex}"
-             Name="ReplayList"
-             Background="Transparent" />
-    
-  </StackPanel>
-  
 </UserControl>

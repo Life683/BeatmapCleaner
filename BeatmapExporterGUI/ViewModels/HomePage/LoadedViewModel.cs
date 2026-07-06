@@ -14,18 +14,18 @@ namespace BeatmapExporterGUI.ViewModels.HomePage
         }
 
         /// <summary>
-        /// The LazerExporter instance currently loaded.
+        /// The LazerCleaner instance currently loaded.
         /// </summary>
-        public LazerExporter Lazer => Exporter.Lazer!;
+        public LazerCleaner Lazer => Exporter.Lazer!;
 
         /// <summary>
-        /// Reference to the filters currently applied to this LazerExporter.
+        /// Reference to the filters currently applied to this LazerCleaner.
         /// </summary>
         public int Filters => Lazer.Configuration.Filters.Count();
 
         /// <summary>
-        /// The export mode currently selected on this LazerExporter.
+        /// Count of beatmap sets currently selected for cleaning.
         /// </summary>
-        public string ExportMode => Lazer.Configuration.ExportFormat.UnitName();
+        public int SelectedSets => Lazer.SelectedBeatmapSetCount;
     }
 }
